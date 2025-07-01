@@ -327,7 +327,7 @@ class DataValidator:
         validation_ranges = {
             'gdp_data': {
                 'gdp_growth_rate': (-10.0, 15.0),
-                'gdp_total': (30000, 80000),  # Billion BDT
+                'gdp_total': (40000, 100000),  # Billion BDT (updated for 55.5T baseline)
             },
             'population_data': {
                 'population_growth_rate': (0.5, 3.0),

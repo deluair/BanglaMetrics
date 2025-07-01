@@ -848,7 +848,7 @@ class DataStorage:
     
     def store_simulation_results(self, 
                                simulation_id: str,
-                               results: Union[pd.DataFrame, List[Dict]],
+                               results: Union[pd.DataFrame, List[Dict], str, Dict],
                                scenario_name: str = "default",
                                parameters: Dict = None) -> bool:
         """Store simulation results."""
@@ -856,16 +856,43 @@ class DataStorage:
         try:
             with self._lock:
                 # Convert to DataFrame if needed
-                if isinstance(results, list):
+                if isinstance(results, str):
+                    # Handle string results (e.g., JSON string)
+                    try:
+                        import json
+                        results_data = json.loads(results)
+                        if isinstance(results_data, list):
+                            df = pd.DataFrame(results_data)
+                        else:
+                            df = pd.DataFrame([results_data])
+                    except:
+                        # If not JSON, create a simple record
+                        df = pd.DataFrame([{'result': results}])
+                elif isinstance(results, dict):
+                    df = pd.DataFrame([results])
+                elif isinstance(results, list):
                     df = pd.DataFrame(results)
-                else:
+                elif isinstance(results, pd.DataFrame):
                     df = results.copy()
+                else:
+                    # Fallback for other types
+                    df = pd.DataFrame([{'result': str(results)}])
                 
                 # Add simulation metadata
-                df['simulation_id'] = simulation_id
-                df['scenario_name'] = scenario_name
-                df['parameters_json'] = json.dumps(parameters or {})
-                df['created_at'] = datetime.now().isoformat()
+                if not df.empty:
+                    df['simulation_id'] = simulation_id
+                    df['scenario_name'] = scenario_name
+                    df['parameters_json'] = json.dumps(parameters or {})
+                    df['created_at'] = datetime.now().isoformat()
+                else:
+                    # Create a minimal record for empty results
+                    df = pd.DataFrame([{
+                        'simulation_id': simulation_id,
+                        'scenario_name': scenario_name,
+                        'parameters_json': json.dumps(parameters or {}),
+                        'created_at': datetime.now().isoformat(),
+                        'status': 'empty_results'
+                    }])
                 
                 with self._get_connection() as conn:
                     df.to_sql('simulation_results', conn, if_exists='append', index=False)

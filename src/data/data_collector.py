@@ -318,7 +318,7 @@ class DataCollector:
         
         # Generate quarterly GDP data
         current_date = start.replace(month=((start.month-1)//3)*3+1, day=1)
-        base_gdp = 45000  # Base GDP in billion BDT
+        base_gdp = 55500  # Base GDP in billion BDT (55.5 trillion BDT for 2024-25)
         
         while current_date <= end:
             # Realistic GDP growth with seasonal patterns
