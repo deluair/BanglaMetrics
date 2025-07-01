@@ -209,7 +209,7 @@ impacts = climate_impact_assessment.assess_impacts(
 ## Economic Context
 
 ### Bangladesh Economy (2024-25)
-- **GDP**: $55.5 trillion BDT
+- **GDP**: 55.5 trillion BDT
 - **Per Capita Income**: $2,820 USD
 - **Growth Rate**: 3.97%
 - **RMG Exports**: $50 billion (80%+ of total exports)
